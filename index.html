@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteio de Times de Futebol</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            flex: 1;
+            min-width: 300px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+        .input-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 16px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary {
+            background-color: var(--success);
+        }
+        
+        .btn-primary:hover {
+            background-color: #219653;
+        }
+        
+        .btn-danger {
+            background-color: var(--accent);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .example {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--secondary);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .example pre {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        
+        .results {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .teams-container {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .team {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            min-width: 280px;
+            transition: transform 0.3s ease;
+        }
+        
+        .team:hover {
+            transform: scale(1.03);
+        }
+        
+        .team-header {
+            text-align: center;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+        .player {
+            padding: 8px;
+            margin: 8px 0;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .player-name {
+            font-weight: 500;
+        }
+        
+        .stars {
+            color: gold;
+            text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background-color: var(--success);
+        }
+        
+        .notification.error {
+            background-color: var(--accent);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            margin-top: 30px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .card {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚽ Sorteio de Times de Futebol</h1>
+            <p class="subtitle">Crie times balanceados com jogadores de diferentes níveis de habilidade</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="card input-section">
+                <h2>Entrada de Dados</h2>
+                
+                <div class="input-group">
+                    <label for="playerData">Lista de Jogadores (nome, estrelas):</label>
+                    <textarea id="playerData" placeholder="Digite os jogadores no formato:
+Neymar,5
+Messi,6
+Cristiano Ronaldo,6
+Mbappé,5
+Van Dijk,4
+Salah,4
+De Bruyne,5
+Kane,4
+Haaland,5
+Lewandowski,5
+Donnarumma,3
+Ederson,3
+Alisson,4
+Marquinhos,4
+Casemiro,4
+Kimmich,4
+Modric,5
+Benzema,5
+Courtois,4
+Ramos,3"></textarea>
+                </div>
+                
+                <div class="example">
+                    <p><strong>Formato esperado:</strong> Cada linha deve conter o nome do jogador seguido por vírgula e o número de estrelas (1-6).</p>
+                    <pre>Neymar,5
+Messi,6
+Cristiano Ronaldo,6
+Mbappé,5
+...</pre>
+                </div>
+                
+                <div class="input-group">
+                    <button id="generateBtn" class="btn btn-primary">Sortear Times</button>
+                    <button id="clearBtn" class="btn btn-danger">Limpar</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Times Sorteados</h2>
+                <div id="results" class="results">
+                    <div class="teams-container" id="teamsContainer"></div>
+                </div>
+                <div id="noResults">
+                    <p>Insira a lista de jogadores e clique em "Sortear Times" para gerar os times.</p>
+                    <p>Serão formados times com 6 jogadores, cada um com um nível de estrela diferente (1 a 6 estrelas).</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Sistema de Sorteio de Times de Futebol &copy; 2023 - Todos os direitos reservados</p>
+        </footer>
+    </div>
+    
+    <div id="notification" class="notification"></div>
+    
+    <script>
+        // Elementos DOM
+        const playerDataTextarea = document.getElementById('playerData');
+        const generateBtn = document.getElementById('generateBtn');
+        const exampleBtn = document.getElementById('exampleBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const resultsDiv = document.getElementById('results');
+        const teamsContainer = document.getElementById('teamsContainer');
+        const noResultsDiv = document.getElementById('noResults');
+        const notification = document.getElementById('notification');
+        
+        // Dados de exemplo
+        const exampleData = `Neymar,5
+Messi,6
+Cristiano Ronaldo,6
+Mbappé,5
+Van Dijk,4
+Salah,4
+De Bruyne,5
+Kane,4
+Haaland,5
+Lewandowski,5
+Donnarumma,3
+Ederson,3
+Alisson,4
+Marquinhos,4
+Casemiro,4
+Kimmich,4
+Modric,5
+Benzema,5
+Courtois,4
+Ramos,3`;
+        
+        // Função para mostrar notificação
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Função para processar os dados dos jogadores
+        function processPlayerData(data) {
+            const lines = data.split('\n').filter(line => line.trim() !== '');
+            const players = [];
+            console.log(lines);
+            for (const line of lines) {
+                const parts = line.split(',');
+                if (parts.length < 2) continue;
+                
+                const name = parts[0].trim();
+                const stars = parseInt(parts[1].trim());
+                
+                if (name && !isNaN(stars)) {
+                    players.push({ name, stars });
+                }
+            }
+            
+            return players;
+        }
+        
+        // Função para embaralhar array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        // Função para sortear os times
+        function sortTeams(players) {
+            // Organizar jogadores por estrelas
+            const byStars = {};
+            for (let i = 1; i <= 6; i++) {
+                byStars[i] = players.filter(p => p.stars === i);
+                shuffleArray(byStars[i]); // Embaralhar cada grupo
+            }
+            
+            // Verificar se há jogadores suficientes
+            for (let i = 1; i <= 6; i++) {
+                if (!byStars[i] || byStars[i].length === 0) {
+                    throw new Error(`Não há jogadores com ${i} estrelas`);
+                }
+            }
+            
+            // Determinar quantidade de times possíveis
+            const teamCount = Math.min(...Object.values(byStars).map(arr => arr.length));
+            
+            // Formar os times
+            const teams = [];
+            for (let i = 0; i < teamCount; i++) {
+                const team = [];
+                for (let stars = 1; stars <= 6; stars++) {
+                    if (byStars[stars][i]) {
+                        team.push(byStars[stars][i]);
+                    }
+                }
+                teams.push(team);
+            }
+            
+            return teams;
+        }
+        
+        // Função para renderizar os times na interface
+        function renderTeams(teams) {
+            teamsContainer.innerHTML = '';
+            
+            if (teams.length === 0) {
+                noResultsDiv.style.display = 'block';
+                resultsDiv.style.display = 'none';
+                return;
+            }
+            
+            teams.forEach((team, index) => {
+                const teamElement = document.createElement('div');
+                teamElement.className = 'team';
+                
+                const teamHeader = document.createElement('div');
+                teamHeader.className = 'team-header';
+                teamHeader.innerHTML = `<h3>Time ${index + 1}</h3>`;
+                teamElement.appendChild(teamHeader);
+                
+                // Ordenar por estrelas para exibição
+                const sortedTeam = [...team].sort((a, b) => a.stars - b.stars);
+                
+                sortedTeam.forEach(player => {
+                    const playerElement = document.createElement('div');
+                    playerElement.className = 'player';
+                    
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'player-name';
+                    nameSpan.textContent = player.name;
+                    
+                    const starsSpan = document.createElement('span');
+                    starsSpan.className = 'stars';
+                    starsSpan.textContent = '★'.repeat(player.stars);
+                    
+                    playerElement.appendChild(nameSpan);
+                    playerElement.appendChild(starsSpan);
+                    teamElement.appendChild(playerElement);
+                });
+                
+                teamsContainer.appendChild(teamElement);
+            });
+            
+            noResultsDiv.style.display = 'none';
+            resultsDiv.style.display = 'block';
+        }
+        
+        // Event Listeners
+        generateBtn.addEventListener('click', () => {
+            console.log('asdf');
+            const data = playerDataTextarea.value.trim();
+            
+            if (!data) {
+                showNotification('Por favor, insira a lista de jogadores!', 'error');
+                return;
+            }
+            
+            try {
+                const players = processPlayerData(data);
+                
+                if (players.length < 6) {
+                    showNotification('É necessário pelo menos 6 jogadores para formar um time!', 'error');
+                    return;
+                }
+                
+                const teams = sortTeams(players);
+                renderTeams(teams);
+                showNotification(`Times sorteados com sucesso! ${teams.length} times formados.`);
+            } catch (error) {
+                showNotification(`Erro: ${error.message}`, 'error');
+            }
+        });
+        
+        exampleBtn.addEventListener('click', () => {
+            playerDataTextarea.value = exampleData;
+            showNotification('Dados de exemplo carregados!');
+        });
+        
+        clearBtn.addEventListener('click', () => {
+            playerDataTextarea.value = '';
+            noResultsDiv.style.display = 'block';
+            resultsDiv.style.display = 'none';
+            showNotification('Dados limpos!');
+        });
+        
+        // Inicialização
+        playerDataTextarea.value = exampleData;
+    </script>
+</body>
+</html>
